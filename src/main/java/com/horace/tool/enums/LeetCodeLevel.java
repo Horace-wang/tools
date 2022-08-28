@@ -6,5 +6,5 @@ package com.horace.tool.enums;
  * horace
  */
 public enum LeetCodeLevel {
-    EASY, HARD, Medium
+    EASY, HARD, MEDIUM
 }

@@ -31,7 +31,7 @@ public class LeetCodeService {
         JSONObject question = o.getJSONObject("question");
         LeetCode leetCode = new LeetCode();
         leetCode.setChance(Double.parseDouble(question.getStr("acRate").substring(0, 4)) * 100);
-        leetCode.setLevel(LeetCodeLevel.valueOf(question.getStr("difficulty")));
+        leetCode.setLevel(LeetCodeLevel.valueOf(question.getStr("difficulty").toUpperCase()));
         leetCode.setQuestionId(question.getStr("questionId"));
         leetCode.setQuestionName(question.getStr("titleCn"));
         return leetCode;
