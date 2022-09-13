@@ -7,6 +7,9 @@ import cn.hutool.json.JSONUtil;
 import com.horace.tool.entity.LeetCode;
 import com.horace.tool.enums.LeetCodeLevel;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -20,6 +23,12 @@ import java.util.Map;
 @Service
 @Slf4j
 public class LeetCodeService {
+    private final StringRedisTemplate template;
+
+    public LeetCodeService(StringRedisTemplate template) {
+        this.template = template;
+    }
+
     public LeetCode getLeetCodeTodayFirst() {
         Map<String, String> map = new HashMap<>();
         map.put("query", "\n query questionOfToday {\n todayRecord {\n date\n userStatus\n question {\n questionId\n frontendQuestionId: questionFrontendId\n difficulty\n      title\n      titleCn: translatedTitle\n      titleSlug\n      paidOnly: isPaidOnly\n      freqBar\n      isFavor\n      acRate\n      status\n      solutionNum\n      hasVideoSolution\n  }\n   }\n}\n ");
@@ -35,5 +44,21 @@ public class LeetCodeService {
         leetCode.setQuestionId(question.getStr("questionId"));
         leetCode.setQuestionName(question.getStr("titleCn"));
         return leetCode;
+    }
+
+
+    public void insertRedis() {
+        LeetCode first = getLeetCodeTodayFirst();
+        template.opsForValue().set("question", JSONUtil.toJsonStr(first));
+        log.info("--------------每日一题缓存成功------------,缓存结果为{}", JSONUtil.toJsonStr(first));
+    }
+
+    public String getQuestion() {
+        String question = template.opsForValue().get("question");
+        if (question != null) {
+            return question;
+        } else {
+            return JSONUtil.toJsonStr(getLeetCodeTodayFirst());
+        }
     }
 }

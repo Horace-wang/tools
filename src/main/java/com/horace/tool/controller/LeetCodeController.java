@@ -4,6 +4,7 @@ import cn.hutool.json.JSONUtil;
 import com.horace.tool.entity.LeetCode;
 import com.horace.tool.service.LeetCodeService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,7 +25,12 @@ public class LeetCodeController {
 
     @GetMapping("/leetcode/first")
     public String getFirst() {
-        LeetCode leetCodeTodayFirst = leetCodeService.getLeetCodeTodayFirst();
-        return JSONUtil.toJsonStr(leetCodeTodayFirst);
+        return leetCodeService.getQuestion();
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void getQuestion() {
+        leetCodeService.insertRedis();
+        log.info("------------定时任务结束-----------");
     }
 }
