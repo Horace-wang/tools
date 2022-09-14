@@ -50,15 +50,22 @@ public class LeetCodeService {
 
     public void insertRedis() {
         LeetCode first = getLeetCodeTodayFirst();
-        template.opsForValue().set("question", JSONUtil.toJsonStr(first));
-        LeetCodeService.REDISFLAG = LocalDate.now().getDayOfMonth();
+        redisOptional(JSONUtil.toJsonStr(first));
         log.info("--------------每日一题缓存成功------------,缓存的flag为{}", LeetCodeService.REDISFLAG);
     }
 
     public String getQuestion() {
         if (LocalDate.now().getDayOfMonth() == REDISFLAG)
             return template.opsForValue().get("question");
-        else
-            return JSONUtil.toJsonStr(getLeetCodeTodayFirst());
+        else {
+            String result = JSONUtil.toJsonStr(getLeetCodeTodayFirst());
+            redisOptional(result);
+            return result;
+        }
+    }
+
+    private void redisOptional(String question) {
+        template.opsForValue().set("question", question);
+        LeetCodeService.REDISFLAG = LocalDate.now().getDayOfMonth();
     }
 }
