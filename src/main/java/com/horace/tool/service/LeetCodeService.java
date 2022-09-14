@@ -7,11 +7,10 @@ import cn.hutool.json.JSONUtil;
 import com.horace.tool.entity.LeetCode;
 import com.horace.tool.enums.LeetCodeLevel;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +23,8 @@ import java.util.Map;
 @Slf4j
 public class LeetCodeService {
     private final StringRedisTemplate template;
+
+    public static int REDISFLAG;
 
     public LeetCodeService(StringRedisTemplate template) {
         this.template = template;
@@ -50,15 +51,14 @@ public class LeetCodeService {
     public void insertRedis() {
         LeetCode first = getLeetCodeTodayFirst();
         template.opsForValue().set("question", JSONUtil.toJsonStr(first));
-        log.info("--------------每日一题缓存成功------------,缓存结果为{}", JSONUtil.toJsonStr(first));
+        LeetCodeService.REDISFLAG = LocalDate.now().getDayOfMonth();
+        log.info("--------------每日一题缓存成功------------,缓存的flag为{}", LeetCodeService.REDISFLAG);
     }
 
     public String getQuestion() {
-        String question = template.opsForValue().get("question");
-        if (question != null) {
-            return question;
-        } else {
+        if (LocalDate.now().getDayOfMonth() == REDISFLAG)
+            return template.opsForValue().get("question");
+        else
             return JSONUtil.toJsonStr(getLeetCodeTodayFirst());
-        }
     }
 }
