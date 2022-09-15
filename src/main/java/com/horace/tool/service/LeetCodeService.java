@@ -47,20 +47,22 @@ public class LeetCodeService {
         return leetCode;
     }
 
-
-    public void insertRedis() {
+    /**
+     * 插入redis外加设置标志的操作
+     * @return 返回json字符串的每日一题
+     */
+    public String insertRedis() {
         LeetCode first = getLeetCodeTodayFirst();
         redisOptional(JSONUtil.toJsonStr(first));
         log.info("--------------每日一题缓存成功------------,缓存的flag为{}", LeetCodeService.REDISFLAG);
+        return JSONUtil.toJsonStr(first);
     }
 
     public String getQuestion() {
         if (LocalDate.now().getDayOfMonth() == REDISFLAG)
             return template.opsForValue().get("question");
         else {
-            String result = JSONUtil.toJsonStr(getLeetCodeTodayFirst());
-            redisOptional(result);
-            return result;
+            return insertRedis();
         }
     }
 
