@@ -1,7 +1,5 @@
 package com.horace.tool.controller;
 
-import cn.hutool.json.JSONUtil;
-import com.horace.tool.entity.LeetCode;
 import com.horace.tool.service.LeetCodeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

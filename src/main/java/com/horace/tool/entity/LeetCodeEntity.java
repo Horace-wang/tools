@@ -10,7 +10,7 @@ import lombok.Data;
  * 一个小的关于leetcode必要信息的实体类
  */
 @Data
-public class LeetCode {
+public class LeetCodeEntity {
     //题目等级
     private LeetCodeLevel level;
     //题目名称
